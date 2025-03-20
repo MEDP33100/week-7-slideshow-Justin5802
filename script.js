@@ -1,47 +1,70 @@
-const apiKey = '1y8mVhotfqTZmuaYQlrDEWnUOolNiDCxo95oEbiH'; // NASA API key
-const apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&count=5`; // Fetch 5 random APOD images
+let currentPokemonId = 1;
 
-const imageElement = document.getElementById('apod-image');
-const titleElement = document.getElementById('apod-title');
-const descriptionElement = document.getElementById('apod-explanation');
-const prevButton = document.getElementById('prev-btn');
-const nextButton = document.getElementById('next-btn');
-
-let currentIndex = 0;
-let apodData = [];
-
-// Fetch data from NASA API
-async function fetchData() {
-  try {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-    apodData = data;
-    showSlide(currentIndex);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+async function fetchPokemonData(pokemonId) {
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+        if (!response.ok) {
+            throw new Error('Pokémon not found');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching Pokémon data:', error);
+    }
 }
 
-// Display slide based on index
-function showSlide(index) {
-  if (apodData.length > 0) {
-    const slide = apodData[index];
-    imageElement.src = slide.url;
-    titleElement.textContent = slide.title;
-    descriptionElement.textContent = slide.explanation;
-  }
+function updateSlide(pokemonData) {
+    const pokemonImage = document.getElementById('pokemon-image');
+    const pokemonName = document.getElementById('pokemon-name');
+    const pokemonInfo = document.getElementById('pokemon-info');
+
+    pokemonImage.src = pokemonData.sprites.front_default;
+    pokemonName.textContent = pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1);
+    pokemonInfo.textContent = `Height: ${pokemonData.height / 10}m, Weight: ${pokemonData.weight / 10}kg`;
 }
 
-// Event listeners for navigation
-prevButton.addEventListener('click', () => {
-  currentIndex = (currentIndex - 1 + apodData.length) % apodData.length;
-  showSlide(currentIndex);
+async function showPokemon(pokemonId) {
+    const pokemonData = await fetchPokemonData(pokemonId);
+    if (pokemonData) {
+        updateSlide(pokemonData);
+    }
+}
+
+document.getElementById('next-btn').addEventListener('click', () => {
+    currentPokemonId = (currentPokemonId % 898) + 1; // There are 898 Pokémon in the API
+    showPokemon(currentPokemonId);
 });
 
-nextButton.addEventListener('click', () => {
-  currentIndex = (currentIndex + 1) % apodData.length;
-  showSlide(currentIndex);
+document.getElementById('prev-btn').addEventListener('click', () => {
+    currentPokemonId = currentPokemonId === 1 ? 898 : currentPokemonId - 1;
+    showPokemon(currentPokemonId);
 });
 
-// Initialize slideshow
-fetchData();
+// Initial load
+showPokemon(currentPokemonId);
+
+async function fetchPokemonData(pokemonId) {
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+        if (!response.ok) {
+            throw new Error('Pokémon not found');
+        }
+        const data = await response.json();
+        console.log('API Response:', data); // Log the API response
+        return data;
+    } catch (error) {
+        console.error('Error fetching Pokémon data:', error);
+    }
+}
+
+function updateSlide(pokemonData) {
+    const pokemonImage = document.getElementById('pokemon-image');
+    const pokemonName = document.getElementById('pokemon-name');
+    const pokemonInfo = document.getElementById('pokemon-info');
+
+    console.log('Image URL:', pokemonData.sprites.front_default); // Log the image URL
+
+    pokemonImage.src = pokemonData.sprites.front_default;
+    pokemonName.textContent = pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1);
+    pokemonInfo.textContent = `Height: ${pokemonData.height / 10}m, Weight: ${pokemonData.weight / 10}kg`;
+}
