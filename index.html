@@ -1,1 +1,24 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NASA APOD Slideshow</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="slideshow-container">
+    <h1>NASA Astronomy Picture of the Day</h1>
+    <div class="slides">
+      <div class="slide">
+        <img id="apod-image" src="" alt="Astronomy Picture of the Day">
+        <div id="apod-title" class="title"></div>
+        <div id="apod-explanation" class="description"></div>
+      </div>
+    </div>
+    <button id="prev-btn" class="nav-btn">&#10094; Previous</button>
+    <button id="next-btn" class="nav-btn">Next &#10095;</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
